@@ -1,0 +1,16 @@
+{
+    "Args": ["app.js"],
+    "Files": ["package.json", "index.html"],
+    "Runtime": "node",
+    "RunConfig": {
+        "ImageName": "unikernel-web-app",
+        "InstanceName": "unikernel-web-app-instance",
+        "Ports": ["3000"]
+    },
+    "Dirs": ["node_modules", "public"],
+    "Env": {
+        "Environment": "development"
+    },
+    "Language": "javascript",
+    "Description": "A Unikernel ExpressJS Web App"
+}
