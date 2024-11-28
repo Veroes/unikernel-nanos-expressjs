@@ -6,6 +6,6 @@
 
 `ops pkg load` for runtime code
 
-## Build Nanos Unikernel
+## Check Nanos Image List
 
-???
+`ops image list`
