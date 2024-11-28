@@ -1,15 +1,15 @@
 {
-  "name": "nanosexpressfinal",
-  "version": "1.0.0",
-  "description": "A Express JS Application bundled into Nanos's Unikernel Runtime Environment",
-  "main": "app.js",
-  "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Veroes",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.21.1"
-  }
+    "name": "nanosexpressfinal",
+    "version": "1.0.0",
+    "description": "A Express JS Application bundled into Nanos's Unikernel Runtime Environment",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Veroes",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.21.1"
+    }
 }
