@@ -1,6 +1,6 @@
 # Nanos's Unikernel for Final Project
 
-## Run Nanos Unikernel (NO BUILD)
+## Run and Build Nanos Unikernel with Ops
 
 `ops pkg load eyberg/node:20.5.0 -c config.json`
 
