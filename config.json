@@ -3,14 +3,14 @@
     "Files": ["package.json", "index.html"],
     "Runtime": "node",
     "RunConfig": {
-        "ImageName": "unikernel-web-app",
-        "InstanceName": "unikernel-web-app-instance",
-        "Ports": ["3000"]
+        "ImageName": "nanos-web-app",
+        "InstanceName": "nanos-web-app-instance",
+        "Ports": ["3001"]
     },
     "Dirs": ["node_modules", "public"],
     "Env": {
         "Environment": "development"
     },
     "Language": "javascript",
-    "Description": "A Unikernel ExpressJS Web App"
+    "Description": "A Nanos Unikernel ExpressJS Web App"
 }
