@@ -5,7 +5,8 @@
     "RunConfig": {
         "ImageName": "nanos-web-app",
         "InstanceName": "nanos-web-app-instance",
-        "Ports": ["3001"]
+        "Ports": ["3001"],
+        "Memory": "1G"
     },
     "Dirs": ["node_modules", "public"],
     "Env": {
