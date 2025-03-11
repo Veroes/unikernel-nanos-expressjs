@@ -18,8 +18,7 @@
 ```
 {
     "RunConfig": {
-        "GPUs": 1,
-        "GPUType": "nvidia-tesla-t4"
+        "CPUs": 2
     }
 }
 ```
