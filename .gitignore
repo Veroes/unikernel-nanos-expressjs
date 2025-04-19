@@ -1,9 +1,16 @@
+# Nanos Config
+/.nanos/
+/.ops/
+
 # Node Config
 /node_modules
 npm-debug.log
 .env
 .DS_Store
 
-# Other
-/.nanos/
-/.ops/
+# Results
+/benchmark*.log
+/benchmark_results.csv
+/wrk_result.log
+cpu_usage_*.log
+mem_usage_*.log
