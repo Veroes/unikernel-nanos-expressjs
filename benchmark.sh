@@ -16,6 +16,7 @@ CONFIG="config.json"
 LOG_FILE="benchmark.log"
 CPU_LOG_DIR="./cpu_logs"
 MEM_LOG_DIR="./mem_logs"
+TMP_WRK_OUTPUT="wrk_output.tmp"
 
 next_log_index=$(ls $CPU_LOG_DIR/cpu_usage_*.log 2>/dev/null | sed -E 's/.*cpu_usage_([0-9]+)\.log/\1/' | sort -n | tail -1)
 
@@ -32,11 +33,11 @@ echo "Starting Benchmark Test..."
 echo "Threads: $THREADS, Connections: $CONNECTIONS, Duration: $DURATION"
 
 # Start Nanos
-ops pkg load $NODE_LIBRARY -c $CONFIG  > /dev/null 2>&1 &
+ops pkg load $NODE_LIBRARY -c $CONFIG > /dev/null 2>&1 &
 
 # Check if Nanos ready
 while ! nc -z localhost 3001; do
-    sleep 0.1
+    sleep 5
 done
 
 # Get PID from running processes
@@ -58,7 +59,7 @@ MEM_MONITOR_PID=$!
 sleep 0.5
 
 # Run WRK benchmark
-wrk -t$THREADS -c$CONNECTIONS -d"${DURATION}s" $APP_URL >> $LOG_FILE 
+wrk -t$THREADS -c$CONNECTIONS -d"${DURATION}s" $APP_URL | tee $TMP_WRK_OUTPUT >> $LOG_FILE 
 
 # Stop Monitoring
 echo "Stopping CPU & Memory monitoring..."
@@ -81,17 +82,31 @@ VIRT_USAGE_MB=$(echo "scale=2; $VIRT_USAGE / 1024" | bc)
 RSS_USAGE_MB=$(echo "scale=2; $RSS_USAGE / 1024" | bc)
 PEAK_RSS_MB=$(echo "scale=2; $PEAK_RSS / 1024" | bc)
 
+# WRK Parsing
+TOTAL_REQUESTS=$(grep -m1 "requests in" $TMP_WRK_OUTPUT | awk '{print $1}')
+REQUESTS_PER_SEC=$(grep "Requests/sec" $TMP_WRK_OUTPUT | awk '{print $2}')
+TRANSFER_PER_SEC=$(grep "Transfer/sec" $TMP_WRK_OUTPUT | awk '{print $2 " " $3}')
+
+SOCKET_CONNECT=$(grep "Socket errors" $TMP_WRK_OUTPUT | awk -F'connect ' '{print $2}' | awk -F',' '{print $1}')
+SOCKET_READ=$(grep "Socket errors" $TMP_WRK_OUTPUT | awk -F'read ' '{print $2}' | awk -F',' '{print $1}')
+SOCKET_WRITE=$(grep "Socket errors" $TMP_WRK_OUTPUT | awk -F'write ' '{print $2}' | awk -F',' '{print $1}')
+SOCKET_TIMEOUT=$(grep "Socket errors" $TMP_WRK_OUTPUT | awk -F'timeout ' '{print $2}' | awk '{print $1}')
+
 # Display results
 echo "===== System Usage (Average) ====="
 echo "CPU Usage: $CPU_USAGE"
 echo "Memory Usage (VIRT): $VIRT_USAGE_MB MB"
 echo "Memory Usage (RSS):  $RSS_USAGE_MB MB"
 echo "Peak Memory Usage (RSS): $PEAK_RSS_MB MB"
+echo "Requests/sec: $REQUESTS_PER_SEC"
+echo "Transfer/sec: $TRANSFER_PER_SEC"
+echo "Socket Errors (C/R/W/T): $SOCKET_CONNECT/$SOCKET_READ/$SOCKET_WRITE/$SOCKET_TIMEOUT"
 
 # Save results to CSV
 if [ ! -f "$CSV_FILE" ]; then
-    echo "Threads,Connections,Duration,CPU Usage,Virtual Memory (MB),Resident Memory (MB),Peak Resident Memory (MB)" > $CSV_FILE
+    echo "Threads,Connections,Duration,CPU Usage,Virtual Memory (MB),Resident Memory (MB),Peak Resident Memory (MB),Total Requests,Requests/sec,Transfer/sec,SocketErr (Connect),SocketErr (Read),SocketErr (Write),SocketErr (Timeout)" > "$CSV_FILE"
 fi
-echo "$THREADS,$CONNECTIONS,$DURATION,$CPU_USAGE,$VIRT_USAGE_MB,$RSS_USAGE_MB,$PEAK_RSS_MB" >> $CSV_FILE
+echo "$THREADS,$CONNECTIONS,$DURATION,$CPU_USAGE,$VIRT_USAGE_MB,$RSS_USAGE_MB,$PEAK_RSS_MB,$TOTAL_REQUESTS,$REQUESTS_PER_SEC,$TRANSFER_PER_SEC,$SOCKET_CONNECT,$SOCKET_READ,$SOCKET_WRITE,$SOCKET_TIMEOUT" >> "$CSV_FILE"
+
 
 echo "Benchmark test completed. Results saved in $LOG_FILE and $CSV_FILE"

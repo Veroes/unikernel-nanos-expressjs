@@ -6,14 +6,14 @@
     echo "========== Benchmark started at $(date) =========="
 
     BENCHMARK_SCRIPT="./benchmark.sh"
-    THREADS=2
-    CONNECTIONS_LIST=(2 5 10 20 30 40)
-    DURATION=30
+    THREADS=4
+    CONNECTIONS_LIST=(4 10 20 30 40 50)
+    DURATION=60
 
     for CONNECTIONS in "${CONNECTIONS_LIST[@]}"; do
         $BENCHMARK_SCRIPT $THREADS $CONNECTIONS $DURATION
 
-        sleep 5
+        sleep 10
         echo ""
         echo "------------------------------------"
         echo ""

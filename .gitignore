@@ -10,7 +10,7 @@ npm-debug.log
 
 # Results
 /benchmark*.log
-/benchmark_results.csv
-/wrk_result.log
+/benchmark_results*.csv
+/wrk_output.tmp
 cpu_usage_*.log
 mem_usage_*.log
