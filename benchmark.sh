@@ -55,9 +55,6 @@ while ps -p $NANOS_PID > /dev/null; do
 done & # Running in Background
 MEM_MONITOR_PID=$!
 
-# Delay
-sleep 0.5
-
 # Run WRK benchmark
 wrk -t$THREADS -c$CONNECTIONS -d"${DURATION}s" $APP_URL | tee $TMP_WRK_OUTPUT >> $LOG_FILE 
 
@@ -69,15 +66,16 @@ kill $MEM_MONITOR_PID 2>/dev/null
 
 # Calculate Average CPU and Memory
 # CPU Usage
-CPU_USAGE=$(awk '{sum+=$8} END {print sum/NR " %"}' $CPU_LOG)
+CPU_USAGE=$(awk '($1 ~ /^[0-9]/) {sum+=$8} END {if (NR > 0) print sum/NR " %"}' "$CPU_LOG")
 
 # Memory Usage
-VIRT_USAGE=$(awk '{sum+=$1} END {printf "%.2f", sum/NR}' $MEM_LOG)
-RSS_USAGE=$(awk '{sum+=$2} END {printf "%.2f", sum/NR}' $MEM_LOG)
-# Peak Memory Usage
-PEAK_RSS=$(awk '{ if ($2 > max) max=$2 } END { print max }' $MEM_LOG)
+VIRT_USAGE=$(awk '{sum+=$1} END {if (NR > 0) printf "%.2f", sum/NR}' "$MEM_LOG")
+RSS_USAGE=$(awk '{sum+=$2} END {if (NR > 0) printf "%.2f", sum/NR}' "$MEM_LOG")
 
-# Convert Memory Usage KB to MB
+# Peak Memory Usage
+PEAK_RSS=$(awk '{if ($2 > max) max=$2} END {print max}' "$MEM_LOG")
+
+# Convert Memory Usage from KB to MB
 VIRT_USAGE_MB=$(echo "scale=2; $VIRT_USAGE / 1024" | bc)
 RSS_USAGE_MB=$(echo "scale=2; $RSS_USAGE / 1024" | bc)
 PEAK_RSS_MB=$(echo "scale=2; $PEAK_RSS / 1024" | bc)

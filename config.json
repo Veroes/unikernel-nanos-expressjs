@@ -6,12 +6,10 @@
         "ImageName": "nanos-web-app",
         "InstanceName": "nanos-web-app-instance",
         "Ports": ["3001"],
-        "Memory": "1G"
+        "Memory": "2G",
+        "Accel": true
     },
     "Dirs": ["node_modules", "public"],
-    "Env": {
-        "Environment": "development"
-    },
     "Language": "javascript",
     "Description": "A Nanos Unikernel ExpressJS Web App"
 }
